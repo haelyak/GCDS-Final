@@ -1,6 +1,6 @@
 ---
 title: "GCDS Final"
-author: "ktsai, Brian"
+author: "ktsai, Brian, Rebecca"
 date: "2022-11-17"
 output: html_document
 ---
