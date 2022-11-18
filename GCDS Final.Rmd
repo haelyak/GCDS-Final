@@ -10,16 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
-## Data Preparation
+### DATA PREPARATION
 
-# Cleaning/Tidying: General Game Survey
+## General Game Survey
+
+# Cleaning/Tidying Data
 
 Step 1. Read the .csv into an object
 Step 2. Filter out bad/incomplete data (i.e., invalid IDs, all of which are <1910; the unfinished responses)
 Step 3. Select only relevant columns (i.e., code ID and Game variables)
 Step 4. Convert all '99' error values into NAs
 
-```{r General Game Survey}
+```{r GS: Data Cleaning}
+# General Survey, cleaned (GS)
 GS <- readr::read_csv("GCDS22_11-15_numeric.csv")
 
 GS <- GS %>% 
@@ -29,21 +32,35 @@ GS <- GS %>%
 
 ```
 
-# Cleaning/Tidying: Post-gameplay responses
+# Gathering continuous variables for clustering
+
+We filter out the binary outcome variables (All the Pleasure__1:Pleasure__10 and Design_1:PLAY variables) from GS and create a new DF called GS_c. This prepares the data for clustering.
+
+```{r GS: selecting continuous variables }
+# General Survey w/ only continuous variables (GS_c)
+GS_c <- GS %>% 
+  select(!c(Pleasure__1:Pleasure__11, Design_1:PLAY)) 
+
+```
+
+
+## Individual post-gameplay responses
+
+# Cleaning/Tidying Data
 
 Step 1. Read game csv into an object
 Step 2. filter out invalid codes
 Step 3. Select only relevant columns (i.e., code ID and response variables)
 
 ```{r Individual Games}
-# Love Letter
+# Love Letter (LL)
 LL <- readr::read_csv("LoveLetter_11-15_numeric.csv")
 
 LL <- LL %>%
   filter(code < 1910) %>% 
   select(-c(1:17))
 
-# Taco Cat Goat Cheese Pizza
+# Taco Cat Goat Cheese Pizza (TC)
 TC <- readr::read_csv("TacoCat_11-15_numeric.csv")
 
 TC <- TC %>%
