@@ -10,27 +10,46 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
-## R Markdown
+## Data Preparation
 
-#Preparing
+# Cleaning/Tidying: General Game Survey
+
+Step 1. Read the .csv into an object
+Step 2. Filter out bad/incomplete data (i.e., invalid IDs, all of which are <1910; the unfinished responses)
+Step 3. Select only relevant columns (i.e., code ID and Game variables)
+Step 4. Convert all '99' error values into NAs
 
 ```{r cars}
 GS <- readr::read_csv("GCDS22_11-15_numeric.csv")
 
-GS <- general_survey1115 %>% 
-  select(., -Status, -IPAddress, )
-
-LoveLetter <- readr::read_csv("LoveLetter_11-15_choice.csv")
-
+GS <- GS %>% 
+  filter(code < 1910, Finished == 1) %>%
+  select(-c(1:17), -id) %>%
+  mutate(across(.fns = ~na_if(.,99)))
 
 ```
 
-## Including Plots
+# Cleaning/Tidying: Post-gameplay responses
 
-You can also embed plots, for example:
+Step 1. Read game csv into an object
+Step 2. filter out invalid codes
+Step 3. Select only relevant columns (i.e., code ID and response variables)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+# Love Letter
+LL <- readr::read_csv("LoveLetter_11-15_numeric.csv")
+
+LL <- LL %>%
+  filter(code < 1910) %>% 
+  select(-c(1:17))
+
+# Taco Cat Goat Cheese Pizza
+TC <- readr::read_csv("TacoCat_11-15_numeric.csv")
+
+TC <- TC %>%
+  filter(code < 1910) %>% 
+  select(-c(1:17))
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
