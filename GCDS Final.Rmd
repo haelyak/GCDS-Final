@@ -17,7 +17,7 @@ library(dplyr)
 ### *Cleaning/Tidying Data*
 
 1. Read the .csv into an object  
-2. Filter out bad/incomplete data (i.e., invalid IDs, all of which are <1910; the unfinished responses)  
+2. Filter out bad/incomplete data (i.e., the invalid 99999 id and the unfinished responses)  
 3. Select only relevant columns (i.e., code ID and Game variables)  
 4. Convert all '99' error values into NAs
 
@@ -26,7 +26,7 @@ library(dplyr)
 GS <- readr::read_csv("GCDS22_11-15_numeric.csv")
 
 GS <- GS %>% 
-  filter(code < 1910, Finished == 1) %>%
+  filter(code < 2100, Finished == 1) %>%
   select(-c(1:17), -id) %>%
   mutate(across(.fns = ~na_if(.,99)))
 
@@ -49,7 +49,7 @@ GS_c <- GS %>%
 ### *Cleaning/Tidying Data*
 
 1. Read game csv into an object  
-2. filter out invalid codes  
+2. Slice out the rows that aren't participant data   
 3. Select only relevant columns (i.e., code ID and response variables)  
 
 ```{r Individual Games}
@@ -57,14 +57,14 @@ GS_c <- GS %>%
 LL <- readr::read_csv("LoveLetter_11-15_numeric.csv")
 
 LL <- LL %>%
-  filter(code < 1910) %>% 
+  slice(3:42) %>% 
   select(-c(1:17))
 
 # Taco Cat Goat Cheese Pizza (TC)
 TC <- readr::read_csv("TacoCat_11-15_numeric.csv")
 
 TC <- TC %>%
-  filter(code < 1910) %>% 
+  slice(3:37) %>% 
   select(-c(1:17))
 
 ```
