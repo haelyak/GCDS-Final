@@ -19,7 +19,7 @@ Step 2. Filter out bad/incomplete data (i.e., invalid IDs, all of which are <191
 Step 3. Select only relevant columns (i.e., code ID and Game variables)
 Step 4. Convert all '99' error values into NAs
 
-```{r cars}
+```{r General Game Survey}
 GS <- readr::read_csv("GCDS22_11-15_numeric.csv")
 
 GS <- GS %>% 
@@ -35,7 +35,7 @@ Step 1. Read game csv into an object
 Step 2. filter out invalid codes
 Step 3. Select only relevant columns (i.e., code ID and response variables)
 
-```{r}
+```{r Individual Games}
 # Love Letter
 LL <- readr::read_csv("LoveLetter_11-15_numeric.csv")
 
