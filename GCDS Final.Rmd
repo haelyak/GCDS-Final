@@ -10,11 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
-### DATA PREPARATION
+# **DATA PREPARATION**
 
 ## General Game Survey
 
-# Cleaning/Tidying Data
+### *Cleaning/Tidying Data*
 
 Step 1. Read the .csv into an object
 Step 2. Filter out bad/incomplete data (i.e., invalid IDs, all of which are <1910; the unfinished responses)
@@ -32,7 +32,7 @@ GS <- GS %>%
 
 ```
 
-# Gathering continuous variables for clustering
+### *Gathering continuous variables for clustering*
 
 We filter out the binary outcome variables (All the Pleasure__1:Pleasure__10 and Design_1:PLAY variables) from GS and create a new DF called GS_c. This prepares the data for clustering.
 
@@ -46,7 +46,7 @@ GS_c <- GS %>%
 
 ## Individual post-gameplay responses
 
-# Cleaning/Tidying Data
+### *Cleaning/Tidying Data*
 
 Step 1. Read game csv into an object
 Step 2. filter out invalid codes
