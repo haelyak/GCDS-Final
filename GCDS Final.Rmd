@@ -1,6 +1,6 @@
 ---
 title: "GCDS Final"
-author: "ktsai, Brian, Rebecca"
+author: "Kayleah, Brian, Rebecca"
 date: "2022-11-17"
 output: html_document
 ---
@@ -41,6 +41,8 @@ We filter out the binary outcome variables (All the Pleasure__1:Pleasure__10 and
 GS_c <- GS %>% 
   select(!c(Pleasure__1:Pleasure__11, Design_1:PLAY)) 
 
+GS_c <- na.omit(GS_c)
+
 ```
 
 
@@ -68,5 +70,24 @@ TC <- TC %>%
   select(-c(1:17))
 
 ```
+
+# **Clustering**
+
+## General Game Survey
+
+### *K-means clustering on the General Game Survey*
+
+```{r}
+# Compute k-means with k = 4
+set.seed(123)
+km.res <- kmeans(GS_c, 2, nstart = 10)
+
+
+# Print the results
+print(km.res)
+
+
+```
+
 
 
