@@ -4,6 +4,25 @@ author: "Kayleah, Brian, Rebecca"
 date: "2022-11-17"
 output: html_document
 ---
+```{r}
+rm(list = ls(all.names = TRUE))      # remove objects in R
+source("https://pastebin.com/raw/8mXH02yg")   # run and comment out after knitting
+source("https://pastebin.com/raw/97NNTTzu")   # run to include in function definitions
+# set the paths for project, script, and data dirs
+proj_dir <- gsub("GCDS.*.Rmd", "GCDS", get_ActivePath())
+proj_name = ""
+r_dir    <- paste(proj_dir, "r", sep = "/")    # r subdir
+data_dir <- paste(proj_dir, "data", sep = "/") # data subdir
+if ( proj_name != "" & !dir.exists(paste(proj_dir, proj_name, sep = "/")) ) {
+# create project dir
+suppressWarnings(dir.create(paste(proj_dir, proj_name, sep = "/")))
+r_dir <- gsub("/r", paste0("/", proj_name, "/r"), r_dir)
+data_dir <- gsub("/data", paste0("/", proj_name, "/data"), data_dir)
+# create sub directories
+suppressWarnings(dir.create(r_dir))
+suppressWarnings(dir.create(data_dir)) }
+```
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -84,7 +103,7 @@ km.res <- kmeans(GS_c, 2, nstart = 10)
 
 
 # Print the results
-print(km.res)
+view(km.res)
 
 
 ```
