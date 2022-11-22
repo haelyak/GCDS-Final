@@ -62,7 +62,6 @@ row.names(GS) <- GS$code
 GS <- GS[, -1]
 
 view(GS)
-
 ```
 
 ### *Gathering continuous variables for clustering*
@@ -96,6 +95,7 @@ LL <- readr::read_csv("LoveLetter_11-15_numeric.csv")
 LL <- LL %>%
   slice(3:42) %>% 
   select(-c(1:17))
+View(LL)
 
 # Taco Cat Goat Cheese Pizza (TC)
 TC <- readr::read_csv("TacoCat_11-15_numeric.csv")
@@ -103,7 +103,23 @@ TC <- readr::read_csv("TacoCat_11-15_numeric.csv")
 TC <- TC %>%
   slice(3:37) %>% 
   select(-c(1:17))
+View(TC)
 
+# Codenames (CD)
+CD <- readr::read_csv("Codenames_11-15_numeric.csv")
+
+CD <- CD %>%
+  slice(3:16) %>%
+  select(-c(1:17))
+View(CD)
+
+# Chronology (CH)
+CH <- readr::read_csv("Chronology_11-15_numeric.csv")
+
+CH <- CH %>%
+  slice(3:32) %>%
+  select(-c(1:17))
+View(CH)
 ```
 
 # **Clustering**
@@ -143,4 +159,45 @@ grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ```
 
+```{r}
+
+## Finding average scores for each trait for each game 
+
+# Love Letter (LL)
+LLScores <- LL %>%
+  na.omit(.) %>%
+  mutate_all(., function(x) as.numeric(as.character(x))) %>%
+  select(-code, -win) %>%
+  colMeans(.)
+
+View(LLScores)
+
+# Taco Cat Goat Cheese Pizza (TC)
+TCScores <- TC %>%
+  na.omit(.) %>%
+  mutate_all(., function(x) as.numeric(as.character(x))) %>%
+  select(-code, -win) %>%
+  colMeans(.)
+
+View(TCScores)
+
+# Codenames (CD)
+CDScores <- CD %>%
+  na.omit(.) %>%
+  mutate_all(., function(x) as.numeric(as.character(x))) %>%
+  select(-code, -win) %>%
+  colMeans(.)
+
+View(CDScores)
+
+# Chronology (CH)
+CHScores <- CH %>%
+  na.omit(.) %>%
+  mutate_all(., function(x) as.numeric(as.character(x))) %>%
+  select(-code, -win) %>%
+  colMeans(.)
+
+View(CHScores)
+
+```
 
