@@ -27,6 +27,10 @@ suppressWarnings(dir.create(data_dir)) }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+
 ```
 
 # **DATA PREPARATION**
@@ -39,15 +43,25 @@ library(dplyr)
 2. Filter out bad/incomplete data (i.e., the invalid 99999 id and the unfinished responses)  
 3. Select only relevant columns (i.e., code ID and Game variables)  
 4. Convert all '99' error values into NAs
+5. Remove columns with NAs in them
+6. Remove the automated row numbers because they mess with k-means clustering
 
 ```{r GS: Data Cleaning}
 # General Survey, cleaned (GS)
-GS <- readr::read_csv("GCDS22_11-15_numeric.csv")
+GS <- read.csv("GCDS22_11-15_numeric.csv")
 
 GS <- GS %>% 
   filter(code < 2100, Finished == 1) %>%
   select(-c(1:17), -id) %>%
   mutate(across(.fns = ~na_if(.,99)))
+
+GS <- GS %>% select_if(~ !any(is.na(.)))
+
+row.names(GS) <- GS$code
+
+GS <- GS[, -1]
+
+view(GS)
 
 ```
 
@@ -55,12 +69,14 @@ GS <- GS %>%
 
 We filter out the binary outcome variables (All the Pleasure__1:Pleasure__10 and Design_1:PLAY variables)   from GS and create a new DF called GS_c. This prepares the data for clustering.
 
+Qualtrics returns numeric data as character objects, so we have to convert all of them to numeric in order to calculate means.
+
 ```{r GS: selecting continuous variables }
 # General Survey w/ only continuous variables (GS_c)
 GS_c <- GS %>% 
-  select(!c(Pleasure__1:Pleasure__11, Design_1:PLAY)) 
+  select(!c(Pleasure__1:Pleasure__11, Challenge.1, FREQUENCY)) 
 
-GS_c <- na.omit(GS_c)
+GS_c <- mutate_all(GS_c, function(x) as.numeric(as.character(x)))
 
 ```
 
@@ -96,17 +112,35 @@ TC <- TC %>%
 
 ### *K-means clustering on the General Game Survey*
 
-```{r}
-# Compute k-means with k = 4
-set.seed(123)
-km.res <- kmeans(GS_c, 2, nstart = 10)
+Set a "random" seed value so the data is reproducible
 
+Run the k-means algorithm with a specified number of clusters and a number of trials. 25 ensures that the best option is chosen.
+
+```{r}
+set.seed(123)
+k5 <- kmeans(GS_c, 5, nstart = 25)
+k4 <- kmeans(GS_c, 4, nstart = 25)
+k3 <- kmeans(GS_c, 3, nstart = 25)
+k2 <- kmeans(GS_c, 2, nstart = 25)
 
 # Print the results
-view(km.res)
-
+str(k4)
+print(k4)
 
 ```
 
+Visualize the clusters
+
+```{r}
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = GS_c) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = GS_c) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = GS_c) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = GS_c) + ggtitle("k = 5")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+```
 
 
