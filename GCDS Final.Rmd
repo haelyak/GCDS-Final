@@ -48,11 +48,11 @@ library(factoextra) # clustering algorithms & visualization
 
 ```{r GS: Data Cleaning}
 # General Survey, cleaned (GS)
-GS <- read.csv("GCDS22_11-15_numeric.csv")
+GSOG <- read.csv("GCDS22_11-15_numeric.csv")
 
-GS <- GS %>% 
+GS <- GSOG %>% 
   filter(code < 2100, Finished == 1) %>%
-  select(-c(1:17), -id) %>%
+  select(-c(1:17)) %>%
   mutate(across(.fns = ~na_if(.,99)))
 
 GS <- GS %>% select_if(~ !any(is.na(.)))
@@ -204,4 +204,29 @@ library(gridExtra)
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ```
+
+
+# **Cognitive Task Analysis**
+
+```{r}
+source("Stroop Task Analysis.R", local = knitr::knit_global())
+
+view(stroopdat)
+
+top5 <- pull(stroopdat, id)
+
+is.vector()
+
+```
+
+# **Filtering the Target Group**
+
+```{r}
+top5General <- GSOG %>% filter(., code %in% top5)
+
+view(top5General)
+
+```
+
+
 
