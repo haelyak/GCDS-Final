@@ -122,43 +122,6 @@ CH <- CH %>%
 View(CH)
 ```
 
-# **Clustering**
-
-## General Game Survey
-
-### *K-means clustering on the General Game Survey*
-
-Set a "random" seed value so the data is reproducible
-
-Run the k-means algorithm with a specified number of clusters and a number of trials. 25 ensures that the best option is chosen.
-
-```{r}
-set.seed(123)
-k5 <- kmeans(GS_c, 5, nstart = 25)
-k4 <- kmeans(GS_c, 4, nstart = 25)
-k3 <- kmeans(GS_c, 3, nstart = 25)
-k2 <- kmeans(GS_c, 2, nstart = 25)
-
-# Print the results
-str(k4)
-print(k4)
-
-```
-
-Visualize the clusters
-
-```{r}
-# plots to compare
-p1 <- fviz_cluster(k2, geom = "point", data = GS_c) + ggtitle("k = 2")
-p2 <- fviz_cluster(k3, geom = "point",  data = GS_c) + ggtitle("k = 3")
-p3 <- fviz_cluster(k4, geom = "point",  data = GS_c) + ggtitle("k = 4")
-p4 <- fviz_cluster(k5, geom = "point",  data = GS_c) + ggtitle("k = 5")
-
-library(gridExtra)
-grid.arrange(p1, p2, p3, p4, nrow = 2)
-
-```
-
 ```{r}
 
 ## Finding average scores for each trait for each game 
@@ -198,6 +161,47 @@ CHScores <- CH %>%
   colMeans(.)
 
 View(CHScores)
+
+```
+
+
+
+
+# **Clustering**
+
+## General Game Survey
+
+### *K-means clustering on the General Game Survey*
+
+Set a "random" seed value so the data is reproducible
+
+Run the k-means algorithm with a specified number of clusters and a number of trials. 25 ensures that the best option is chosen.
+
+```{r}
+set.seed(123)
+k5 <- kmeans(GS_c, 5, nstart = 25)
+k4 <- kmeans(GS_c, 4, nstart = 25)
+k3 <- kmeans(GS_c, 3, nstart = 25)
+k2 <- kmeans(GS_c, 2, nstart = 25)
+
+# Print the results
+str(k4)
+print(k4)
+
+```
+
+Visualize the clusters
+
+```{r}
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = GS_c) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = GS_c) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = GS_c) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = GS_c) + ggtitle("k = 5")
+
+library(dplyr)
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ```
 
