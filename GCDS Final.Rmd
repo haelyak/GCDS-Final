@@ -52,16 +52,19 @@ GSOG <- read.csv("GCDS22_11-15_numeric.csv")
 
 GS <- GSOG %>% 
   filter(code < 2100, Finished == 1) %>%
-  select(-c(1:17)) %>%
-  mutate(across(.fns = ~na_if(.,99)))
+  select(-c(1:17))
 
-GS <- GS %>% select_if(~ !any(is.na(.)))
-
-row.names(GS) <- GS$code
-
-GS <- GS[, -1]
+GS <- mutate_all(GS, function(x) as.numeric(as.character(x)))
 
 view(GS)
+
+GS_for_clustering <- GS %>% select_if(~ !any(is.na(.)))
+
+row.names(GS_for_clustering) <- GS_for_clustering$code
+
+GS_for_clustering <- GS_for_clustering[, -1]
+
+view(GS_for_clustering)
 ```
 
 ### *Gathering continuous variables for clustering*
@@ -72,7 +75,7 @@ Qualtrics returns numeric data as character objects, so we have to convert all o
 
 ```{r GS: selecting continuous variables }
 # General Survey w/ only continuous variables (GS_c)
-GS_c <- GS %>% 
+GS_c <- GS_for_clustering %>% 
   select(!c(Pleasure__1:Pleasure__11, Challenge.1, FREQUENCY)) 
 
 GS_c <- mutate_all(GS_c, function(x) as.numeric(as.character(x)))
@@ -222,11 +225,32 @@ is.vector()
 # **Filtering the Target Group**
 
 ```{r}
-top5General <- GSOG %>% filter(., code %in% top5)
+top5General <- GS %>% filter(., code %in% top5)
+
+notop5General <- GS %>% filter(., !(code %in% top5))
 
 view(top5General)
 
+view(notop5General)
+
 ```
+
+```{r}
+GS_top5 <- GS %>% mutate(., top =  code %in% top5)
+
+view(GS_top5)
+
+view(GS_top5_pref <- GS_top5 %>% group_by(., top) %>% summarise(across(everything(), list(mean))))
+
+GS_top_5_pref <- GS_top_5 %>% group_by(top) %>% 
+  
+
+view(stroopdatWAccRate <- stroopdatWAccRate %>% 
+       group_by(id) %>%
+       mutate(., stroopAcc = AccRate - lag(AccRate)))
+
+```
+
 
 
 
