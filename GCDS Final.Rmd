@@ -64,6 +64,18 @@ row.names(GS_for_clustering) <- GS_for_clustering$code
 
 GS_for_clustering <- GS_for_clustering[, -1]
 
+GS_z <- GS_for_clustering %>% 
+  mutate(., across(.fns = ~na_if(., 99))) %>% 
+  mutate(., across(.cols = where(is.numeric), 
+                   .fns = ~as.numeric(scale(.x)), 
+                   .names = "{.col}")) %>% 
+  select(!c(Pleasure__2, Design_7)) %>% 
+  mutate(., across(.fns = ~replace_na(.x, 0)))
+
+GS_z$code <- GS$code
+
+view(GS_z)
+
 view(GS_for_clustering)
 ```
 
@@ -236,18 +248,34 @@ view(notop5General)
 ```
 
 ```{r}
-GS_top5 <- GS %>% mutate(., top =  code %in% top5)
+#add a new variable if they are in the top5
+GS_top5 <- GS_z %>% mutate(., top =  code %in% top5)
 
 view(GS_top5)
 
-view(GS_top5_pref <- GS_top5 %>% group_by(., top) %>% summarise(across(everything(), list(mean))))
+#find the mean for every column grouped by whether or not they are in the top5
+GS_top5_pref <- GS_top5 %>% group_by(., top) %>% summarise(across(everything(), list(mean)))
 
-GS_top_5_pref <- GS_top_5 %>% group_by(top) %>% 
-  
 
-view(stroopdatWAccRate <- stroopdatWAccRate %>% 
-       group_by(id) %>%
-       mutate(., stroopAcc = AccRate - lag(AccRate)))
+#function that finds the difference between rows
+diff <- function(x) {
+  diff = abs(lag(x) - x)
+}
+
+GS_top5_pref_diff <- GS_top5_pref %>% group_by(., top) %>% apply(., 2, diff)
+
+#pull out the row that is the differences for each variable
+GS_top5_row <- GS_top5_pref_diff[2,]
+
+#add the differences to the preference dataframe
+GS_top5_pref <- rbind(GS_top5_pref, GS_top5_row)
+
+GS_only_diff <- slice(GS_top5_pref, 3)
+
+GS_only_diff_long <- pivot_longer(GS_only_diff, cols = everything())
+
+#sort variables based on biggest difference
+GS_only_diff_long_sorted <- arrange(GS_only_diff_long, cols = -value)
 
 ```
 
