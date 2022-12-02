@@ -15,4 +15,3 @@ view(stroopdat <- stroopdat %>%
   filter(rt <= q25))
 
 
-
