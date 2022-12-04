@@ -27,6 +27,7 @@ suppressWarnings(dir.create(data_dir)) }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(magrittr)
 library(tidyverse)  # data manipulation
 library(cluster)    # clustering algorithms
 library(factoextra) # clustering algorithms & visualization
@@ -42,9 +43,11 @@ library(factoextra) # clustering algorithms & visualization
 1. Read the .csv into an object  
 2. Filter out bad/incomplete data (i.e., the invalid 99999 id and the unfinished responses)  
 3. Select only relevant columns (i.e., code ID and Game variables)  
-4. Convert all '99' error values into NAs
-5. Remove columns with NAs in them
+4. Conver all the data to numeric
+5. For clustering, remove all NAs
 6. Remove the automated row numbers because they mess with k-means clustering
+7. Scale all the numeric variables except for the code values, for NAs impute in 0 instead
+8. Add the code values back to the scaled dataframe
 
 ```{r GS: Data Cleaning}
 # General Survey, cleaned (GS)
@@ -88,7 +91,7 @@ Qualtrics returns numeric data as character objects, so we have to convert all o
 ```{r GS: selecting continuous variables }
 # General Survey w/ only continuous variables (GS_c)
 GS_c <- GS_for_clustering %>% 
-  select(!c(Pleasure__1:Pleasure__11, Challenge.1, FREQUENCY)) 
+  select(!c(Pleasure__1:Pleasure__11, Challenge.1)) 
 
 GS_c <- mutate_all(GS_c, function(x) as.numeric(as.character(x)))
 
@@ -137,9 +140,9 @@ CH <- CH %>%
 View(CH)
 ```
 
-```{r}
+### Finding the average scores for each trait for each game
 
-## Finding average scores for each trait for each game 
+```{r}
 
 # Love Letter (LL)
 LLScores <- LL %>%
@@ -181,7 +184,6 @@ View(CHScores)
 
 
 
-
 # **Clustering**
 
 ## General Game Survey
@@ -205,7 +207,7 @@ print(k4)
 
 ```
 
-Visualize the clusters
+## Visualize the clusters
 
 ```{r}
 # plots to compare
@@ -223,6 +225,12 @@ grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 # **Cognitive Task Analysis**
 
+## Stroop Task
+
+### *Top 5 Processing Speed on Stroop Task*
+
+Identifying the top 5 participants based on reaction time on congruent stroop tasks. This translates to fast processing speeds.
+
 ```{r}
 source("Stroop Task Analysis.R", local = knitr::knit_global())
 
@@ -230,11 +238,15 @@ view(stroopdat)
 
 top5 <- pull(stroopdat, id)
 
-is.vector()
-
 ```
 
 # **Filtering the Target Group**
+
+## Stroop Task
+
+### *Filtering out the top5 people from stroop*
+
+Filter into two dataframes the people in the top5 and the people not in the top5
 
 ```{r}
 top5General <- GS %>% filter(., code %in% top5)
@@ -247,6 +259,19 @@ view(notop5General)
 
 ```
 
+# **Analyzing Target Group**
+
+## General Game Survey
+
+### *Examining target group general game preferences*
+
+Examining the top5 people's general game preferences vs. everyone else's general game preferences.
+
+1. Calculate the mean of each game category for each group (top5 or everyone else)
+2. Calculate the difference in these means between the two groups.
+3. Sort to find the measures with the biggest differences.
+
+
 ```{r}
 #add a new variable if they are in the top5
 GS_top5 <- GS_z %>% mutate(., top =  code %in% top5)
@@ -255,6 +280,8 @@ view(GS_top5)
 
 #find the mean for every column grouped by whether or not they are in the top5
 GS_top5_pref <- GS_top5 %>% group_by(., top) %>% summarise(across(everything(), list(mean)))
+
+view(GS_top5_pref)
 
 
 #function that finds the difference between rows
@@ -270,12 +297,49 @@ GS_top5_row <- GS_top5_pref_diff[2,]
 #add the differences to the preference dataframe
 GS_top5_pref <- rbind(GS_top5_pref, GS_top5_row)
 
+view(GS_top5_pref)
+
 GS_only_diff <- slice(GS_top5_pref, 3)
 
+#pivot longer to use the arrange function on the columns
 GS_only_diff_long <- pivot_longer(GS_only_diff, cols = everything())
 
 #sort variables based on biggest difference
-GS_only_diff_long_sorted <- arrange(GS_only_diff_long, cols = -value)
+GS_only_diff_long_sorted <- GS_only_diff_long %>% 
+  arrange(., cols = -value) 
+
+#Remove variables that are not game metrics
+GS_only_diff_long_sorted <- subset(GS_only_diff_long_sorted, name !="top") 
+
+GS_only_diff_long_sorted <- subset(GS_only_diff_long_sorted, name !="code_1") 
+
+
+view(GS_only_diff_long_sorted)
+```
+
+Defining the top 10 preferences of top5 people in order to create a game with these characteristics.
+
+```{r}
+
+top10pref <- slice(GS_only_diff_long_sorted, c(1:10))
+
+top10prefnames <- top10pref$name
+
+print(top10prefnames)
+
+top10prefnames <- c("CAT_3", "Pleasure__3", "CAT_27", "CAT_37", "Expression", "MECH_28", "CAT_33", "Submission", "CAT_64", "CAT_2")
+
+view(top10pref)
+
+view(GSOG)
+
+top10prefdescriptions <- GSOG[, top10prefnames]
+
+top10prefdescriptions <- top10prefdescriptions[1,]
+
+print(top10prefdescriptions)
+
+view(top10prefdescriptions)
 
 ```
 
