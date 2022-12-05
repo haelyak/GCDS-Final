@@ -286,7 +286,7 @@ view(GS_top5_pref)
 
 #function that finds the difference between rows
 diff <- function(x) {
-  diff = abs(lag(x) - x)
+  diff = x - lag(x)
 }
 
 GS_top5_pref_diff <- GS_top5_pref %>% group_by(., top) %>% apply(., 2, diff)
@@ -327,9 +327,14 @@ top10prefnames <- top10pref$name
 
 print(top10prefnames)
 
-top10prefnames <- c("CAT_3", "Pleasure__3", "CAT_27", "CAT_37", "Expression", "MECH_28", "CAT_33", "Submission", "CAT_64", "CAT_2")
+#function to remove last character from a string
+remlast <- function(x) {
+  remlast = substr(x, 1, nchar(x)-2)
+}
 
-view(top10pref)
+top10prefnames <- sapply(top10prefnames, remlast)
+
+print(top10prefnames)
 
 view(GSOG)
 
