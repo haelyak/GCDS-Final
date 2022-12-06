@@ -43,7 +43,7 @@ library(factoextra) # clustering algorithms & visualization
 1. Read the .csv into an object  
 2. Filter out bad/incomplete data (i.e., the invalid 99999 id and the unfinished responses)  
 3. Select only relevant columns (i.e., code ID and Game variables)  
-4. Conver all the data to numeric
+4. Convert all the data to numeric
 5. For clustering, remove all NAs
 6. Remove the automated row numbers because they mess with k-means clustering
 7. Scale all the numeric variables except for the code values, for NAs impute in 0 instead
