@@ -28,6 +28,7 @@ suppressWarnings(dir.create(data_dir)) }
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(magrittr)
+library(ggplot2)
 library(tidyverse)  # data manipulation
 library(cluster)    # clustering algorithms
 library(factoextra) # clustering algorithms & visualization
@@ -348,6 +349,26 @@ view(top10prefdescriptions)
 
 ```
 
+### *Graphing the Preferences*
+
+
+```{r}
+#pivot longer to be able to plot all the different game items
+GS_top5_pref_long <- subset(GS_top5_pref, select=-c(code_1))
+
+GS_top5_pref_long <- GS_top5_pref_long[, c(top10pref$name, "top")]
+
+view(GS_top5_pref_long)
+
+GS_top5_pref_long <- pivot_longer(GS_top5_pref_long[1:2,], !top)
+
+
+# Grouped
+ggplot(GS_top5_pref_long, aes(x = name, y = value,  fill=as.factor(top))) + 
+    geom_bar(position="stack", stat="identity")+
+  xlab("Game Item") + 
+  ylab("Standardized Preference")
+```
 
 
 
